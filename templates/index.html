@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PredictHR | AI Employee Churn Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f0f0f;
+            --accent-red: #8B0000;
+            --glow-red: #FF2E2E;
+            --glass: rgba(26, 26, 26, 0.6);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-dark);
+            color: #EAEAEA;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Animated Background Particles */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-glow {
+            background: linear-gradient(135deg, #8B0000 0%, #B22222 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(255, 46, 46, 0.5);
+            transform: translateY(-2px);
+        }
+
+        input,
+        select {
+            background: #121212 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.4) !important;
+            outline: none;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ffffff, #B22222);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-red);
+        }
+
+
+
+
+
+        .pulse-red {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(139, 0, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 0, 0, 0);
+            }
+        }
+
+        .loader {
+            border: 3px solid #1a1a1a;
+            border-top: 3px solid #8B0000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+    <div class="bg-glow"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center glass-card border-none rounded-none bg-black/40">
+        <div class="flex items-center gap-2">
+            <div
+                class="w-8 h-8 bg-red-800 rounded-lg flex items-center justify-center font-bold text-white shadow-[0_0_10px_rgba(139,0,0,0.5)]">
+                P</div>
+            <span class="text-xl font-extrabold tracking-tight">PREDICT<span class="text-red-700">HR</span></span>
+        </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+            <a href="#" class="hover:text-red-500 transition-colors" onclick="showSection('landing')">Home</a>
+            <a href="#" class="hover:text-red-500 transition-colors" onclick="showSection('analytics')">Analytics</a>
+            <a href="#" class="hover:text-red-500 transition-colors">Case Studies</a>
+        </div>
+        <a href="#predict" class="btn-glow px-6 py-2 rounded-full text-sm font-bold">Start
+            Prediction</a>
+    </nav>
+
+    <!-- Content Wrapper -->
+    <main class="pt-24 pb-12 px-4 max-w-7xl mx-auto">
+
+        <!-- 1. LANDING SECTION -->
+        <section id="landing"
+            class="section-transition section-active min-h-[80vh] flex flex-col items-center justify-center text-center">
+            <div
+                class="inline-flex items-center px-4 py-2 rounded-full border border-red-900/50 bg-red-950/20 text-red-400 text-xs font-bold mb-6 tracking-widest uppercase">
+                <span class="w-2 h-2 bg-red-600 rounded-full mr-2 pulse-red"></span>
+                Next-Gen Workforce Analytics
+            </div>
+            <h1 class="text-5xl md:text-8xl font-black mb-6 tracking-tighter text-gradient leading-tight">
+                Predict Employee Churn <br> Before It Happens.
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mb-10 font-light leading-relaxed">
+                Leverage advanced AI algorithms to identify high-risk retention zones.
+                Keep your top talent by understanding behavioral data trends in real-time.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4">
+                <a href="#predict"
+                    class="btn-glow px-10 py-4 rounded-xl text-lg font-bold flex items-center justify-center gap-2">
+                    Enter Dashboard <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Dashboard Preview Mockup -->
+            <div class="mt-20 w-full max-w-5xl glass-card rounded-t-3xl border-b-0 p-4 opacity-80">
+                <div class="flex gap-2 mb-4">
+                    <div class="w-3 h-3 bg-red-900 rounded-full"></div>
+                    <div class="w-3 h-3 bg-gray-700 rounded-full"></div>
+                    <div class="w-3 h-3 bg-gray-700 rounded-full"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 h-48 bg-black/40 rounded-xl overflow-hidden animate-pulse p-4">
+                    <div class="bg-white/5 rounded-lg"></div>
+                    <div class="bg-white/5 rounded-lg"></div>
+                    <div class="bg-white/5 rounded-lg"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PREDICTION SECTION -->
+        <section id="predict" class=" max-w-4xl mx-auto py-10">
+            <div class="mb-10 text-center">
+                <h2 class="text-4xl font-bold mb-3">Assessment Portal</h2>
+                <p class="text-gray-400">Input employee metrics for instant behavioral risk analysis.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Input Form -->
+                <div class="glass-card p-8 rounded-3xl">
+                    <form id="predictionForm" class="space-y-6">
+
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Satisfaction</label>
+                                <input type="number" id="satisfaction" placeholder="0.0 - 1.0" step="0.01" min="0"
+                                    max="1" value="0.5" class="w-full px-4 py-3 rounded-xl text-white"
+                                    name="satisfaction">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Evaluation</label>
+                                <input type="number" id="evaluation" placeholder="0.0 - 1.0" step="0.01" min="0" max="1"
+                                    value="0.7" class="w-full px-4 py-3 rounded-xl text-white" name="evaluation">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Average Monthly
+                                hours</label>
+                            <input type="number" id="hours" placeholder="Avg Monthly Hours" value="200"
+                                class="w-full px-4 py-3 rounded-xl text-white" name="avg_month_hour">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Projects</label>
+                                <input type="number" id="projects" placeholder="Count" value="3"
+                                    class="w-full px-4 py-3 rounded-xl text-white" name="projects">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tenure
+                                    (Years)</label>
+                                <input type="number" id="tenure" placeholder="Years" value="2"
+                                    class="w-full px-4 py-3 rounded-xl text-white" name="tenure">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Department</label>
+                            <select id="department" class="w-full px-4 py-3 rounded-xl text-white" name="department">
+                                <option>sales</option>
+                                <option>technical</option>
+                                <option>support</option>
+                                <option>IT</option>
+                                <option>product_mng</option>
+                                <option>marketing</option>
+                                <option>RandD</option>
+                                <option>accounting</option>
+                                <option>hr</option>
+                                <option>management</option>
+                            </select>
+                        </div>
+
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Work
+                                    Accident</label>
+                                <select id="work_accident" class="w-full px-4 py-3 rounded-xl text-white"
+                                    name="work_accident">
+                                    <option>1</option>
+                                    <option>0</option>
+
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Promotion</label>
+                                <select id="promotion" class="w-full px-4 py-3 rounded-xl text-white" name="promotion">
+                                    <option>1</option>
+                                    <option>0</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Salary</label>
+                            <input type="number" required id="salary" placeholder="Salary" name="salary"
+                                class="w-full px-4 py-3 rounded-xl text-white">
+                        </div>
+
+                        <button
+                            class="w-full btn-glow py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 mt-4">
+                            <span id="btnText">Execute Prediction</span>
+                            <div id="btnLoader" class="loader hidden" style="width: 20px; height: 20px;"></div>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Live Results Area -->
+                <div id="resultContainer"
+                    class="flex flex-col justify-center items-center p-8 glass-card rounded-3xl border-dashed border-red-900/30">
+                    <div id="resultPlaceholder" class="text-center">
+                        <div
+                            class="w-20 h-20 bg-gray-800/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+                            <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest">Awaiting Input</h3>
+                        <p class="text-gray-600 mt-2">Neural network standby...</p>
+                    </div>
+
+                    <div id="resultDisplay" class="hidden w-full text-center">
+                        <div id="riskLevel"
+                            class="text-xs font-black uppercase tracking-[0.2em] mb-4 py-2 px-6 inline-block rounded-full">
+                            -- Risk</div>
+
+                        <div class="relative w-48 h-48 mx-auto mb-6">
+                            <canvas id="gaugeChart"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center mt-4">
+                                <span id="probabilityText" class="text-5xl font-black">0%</span>
+                                <span class="text-[10px] text-gray-500 uppercase">Probability</span>
+                            </div>
+                        </div>
+
+                        <div class="text-left bg-black/40 p-5 rounded-2xl mb-4 border border-white/5">
+                            <h4 class="text-sm font-bold mb-2 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                Decision Insight
+                            </h4>
+                            <p id="insightText" class="text-sm text-gray-400 italic">Analysis complete.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+    </main>
+
+    <footer class="mt-20 py-10 text-center text-gray-600 text-xs tracking-widest uppercase border-t border-white/5">
+        &copy; 2024 Neural HR Dynamics | Precision Predictive Analytics
+    </footer>
+
+    <script>
+
+        let form = document.getElementById('predictionForm')
+        form.onsubmit = runPrediction
+
+        // -- Gauge Chart Setup --
+        let gaugeChartInstance = null;
+        function initGauge(score) {
+            const ctx = document.getElementById('gaugeChart').getContext('2d');
+            if (gaugeChartInstance) gaugeChartInstance.destroy();
+
+            const color = score > 60 ? '#8B0000' : '#4ade80';
+
+            gaugeChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [score, 100 - score],
+                        backgroundColor: [color, '#1a1a1a'],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270,
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '85%',
+                    plugins: { tooltip: { enabled: false } }
+                }
+            });
+        }
+
+
+        async function runPrediction(e) {
+            e.preventDefault();
+
+            const form = document.getElementById('predictionForm');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            // UI Feedback: Start Loading
+            btnText.style.display = 'none';
+            btnLoader.classList.remove('hidden');
+
+            try {
+                let form_data = new FormData(form);
+                const response = await fetch('/predict', {
+                    method: "POST",
+                    body: form_data
+                });
+
+                const data = await response.json();
+                console.log(data)
+                /* BACKEND DATA MAPPING:
+                   data.result -> 0 or 1
+                   data.probablity -> [prob_0, prob_1] 
+                */
+                const isChurn = data.result === 1;
+                // Convert the probability of index 1 (Churn) to a percentage (0-100)
+                console.log(data.probability[1])
+                const probValue = Math.round(data.probability[1] * 100);
+                console.log('yaha tk sai run hoya')
+                
+                // Hide placeholder, show result container
+                document.getElementById('resultPlaceholder').style.display = 'none';
+                document.getElementById('resultDisplay').style.display = 'block';
+
+                // Update Risk Level Badge
+                const riskEl = document.getElementById('riskLevel');
+                riskEl.innerText = isChurn ? 'High Churn Risk' : 'Low Churn Risk';
+                riskEl.className = `text-xs font-black uppercase tracking-[0.2em] mb-4 py-2 px-6 inline-block rounded-full ${isChurn ? 'bg-red-900/40 text-red-500' : 'bg-green-900/40 text-green-500'
+                    }`;
+
+                // Update Probability Text & Color
+                const probText = document.getElementById('probabilityText');
+                probText.innerText = probValue + '%';
+                probText.style.color = isChurn ? '#FF2E2E' : '#4ade80';
+
+                // Update Gauge Chart
+                initGauge(probValue);
+
+                // Dynamic Insights based on backend result + form values
+                const sat = document.getElementById('satisfaction').value;
+                const hours = document.getElementById('hours').value;
+                let insight = "";
+                if (isChurn) {
+                    if (sat < 0.4) insight = "Primary risk factor: low satisfaction scores. Immediate management intervention recommended.";
+                    else if (hours > 250) insight = "Burnout alert: excessive monthly hours detected. Risk is situational.";
+                    else insight = "Predictive patterns suggest a high flight risk based on historical turnover data.";
+                } else {
+                    insight = "Neural patterns indicate high organizational alignment and stable retention probability.";
+                }
+
+                document.getElementById('insightText').innerText = insight;
+
+            } catch (error) {
+                console.error("Prediction Error:", error);
+                document.getElementById('insightText').innerText = "Error connecting to the neural engine. Please try again.";
+            } finally {
+                // UI Feedback: Stop Loading
+                btnText.style.display = 'block';
+                btnLoader.classList.add('hidden');
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>
