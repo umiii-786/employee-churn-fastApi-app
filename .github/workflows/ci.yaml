@@ -44,4 +44,8 @@ jobs:
       if: success()
       run: | 
          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest .
+
+    - name: push docker image
+      run: | 
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
       
