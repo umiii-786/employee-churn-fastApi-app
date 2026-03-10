@@ -6,10 +6,16 @@ import dagshub
 import numpy as np
 import pickle
 from sklearn.compose import ColumnTransformer
+import os 
 # Setup tracking
-dagshub.init(repo_owner="umiii-786",repo_name="employee-churn-prediction",mlflow=True)
-mlflow.set_tracking_uri("https://dagshub.com/umiii-786/employee-churn-prediction.mlflow")
 
+dagshub_pat=os.getenv("DAGSHUB_PAT")
+if not dagshub_pat:
+    raise EnvironmentError('DAGSHUB_PAT environment variable is not setted ') 
+os.environ['MLFLOW_TRACKING_USERNAME']=dagshub_pat 
+os.environ['MLFLOW_TRACKING_PASSWORD']=dagshub_pat 
+
+mlflow.set_tracking_uri('https://dagshub.com/umiii-786/employee-churn-prediction.mlflow')
 
 app=FastAPI()
 template=Jinja2Templates('templates')
