@@ -32,3 +32,8 @@ jobs:
         DAGSHUB_PAT: ${{ secrets.DAGSHUB_PAT }}
       run: |
         python -m unittest testing/test_routes.py
+
+    - name: build docker image
+      run: | 
+        docker build -t {{ secrets.DOCKER_HUB_USERNAME }}/churn-application:latest .
+      
