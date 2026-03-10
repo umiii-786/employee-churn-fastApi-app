@@ -56,14 +56,14 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
 
-      script: |
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
+        script: |
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
 
-          docker stop churn-app || true
-          docker rm churn-app || true
+            docker stop churn-app || true
+            docker rm churn-app || true
 
-          docker run -d -p 80:8000 \
-          -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
-          --name churn-app \
-          ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
+            docker run -d -p 80:8000 \
+            -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
+            --name churn-app \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
       
