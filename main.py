@@ -38,8 +38,6 @@ def HomePage(request:Request):
     return template.TemplateResponse(request=request,name='index.html')
 
 
-
-
 @app.post("/predict")
 async def predict(request: Request):
     print('request ai')
