@@ -58,12 +58,14 @@ jobs:
 
         script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
-
+            
             docker stop churn-app || true
             docker rm churn-app || true
 
             docker run -d -p 80:8000 \
+            --restart unless-stopped \
             -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
             --name churn-app \
             ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
-      
+
+            docker logs churn-app --tail 50
