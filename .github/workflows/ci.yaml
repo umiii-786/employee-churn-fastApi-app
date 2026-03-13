@@ -48,7 +48,7 @@ jobs:
     - name: Build Docker Image
       if: success()
       run: |
-          docker build -t my-app .
+          docker build -t churn-application-image:latest .
 
     - name: Tag Image
       run: |
