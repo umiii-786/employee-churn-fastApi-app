@@ -8,7 +8,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy rest of the project
-COPY . .
+COPY . ./app
 
 EXPOSE 8000
 
