@@ -57,38 +57,25 @@ jobs:
     - name: Push Image to ECR
       run: |
           docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
-      # uses: docker/login-action@v3
-      # with:
-      #   username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #   password: ${{ secrets.DOCKER_HUB_PAT }}
 
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
 
-    # - name: build docker image
-    #   if: success()
-    #   run: | 
-    #      docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest .
-
-    # - name: push docker image
-    #   run: | 
-    #     docker push ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
-
-    # - name: Deploy to EC2
-    #   uses: appleboy/ssh-action@v1.0.3
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USERNAME }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-
-    #     script: |
-    #         docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
+        script: |
+            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 528043283929.dkr.ecr.ap-south-1.amazonaws.com
+            docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
             
-    #         docker stop churn-app || true
-    #         docker rm churn-app || true
+            docker stop churn-app || true
+            docker rm churn-app || true
 
-    #         docker run -d -p 80:8000 \
-    #         --restart unless-stopped \
-    #         -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
-    #         --name churn-app \
-    #         ${{ secrets.DOCKER_HUB_USERNAME }}/churn-prediction-app:latest
+            docker run -d -p 80:8000 \
+            --restart unless-stopped \
+            -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
+            --name churn-app \
+            528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
 
-    #         docker logs churn-app --tail 50
+            docker logs churn-app --tail 50
