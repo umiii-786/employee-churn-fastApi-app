@@ -52,11 +52,11 @@ jobs:
 
     - name: Tag Image
       run: |
-          docker tag churn-application-image:latest 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
+          docker tag churn-application-image:latest 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
 
     - name: Push Image to ECR
       run: |
-          docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
+          docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.3
@@ -67,7 +67,7 @@ jobs:
 
         script: |
             aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 528043283929.dkr.ecr.ap-south-1.amazonaws.com
-            docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
+            docker pull 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
             
             docker stop churn-app || true
             docker rm churn-app || true
@@ -76,6 +76,6 @@ jobs:
             --restart unless-stopped \
             -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
             --name churn-app \
-            528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:latest
+            528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
 
             docker logs churn-app --tail 50
