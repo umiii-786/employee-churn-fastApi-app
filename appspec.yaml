@@ -6,7 +6,7 @@ files:
     destination: /home/ubuntu/flask-app
 
 hooks:
-  AfterInstall:
+  BeforeInstall:
     - location: scripts/install_dependencies.sh
       timeout: 300
       runas: ubuntu
