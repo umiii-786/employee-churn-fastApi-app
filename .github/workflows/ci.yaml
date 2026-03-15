@@ -52,30 +52,30 @@ jobs:
 
     - name: Tag Image
       run: |
-          docker tag churn-application-image:latest 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
+          docker tag churn-application-image:latest 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v1
 
     - name: Push Image to ECR
       run: |
-          docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
+          docker push 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v1
 
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+    # - name: Deploy to EC2
+    #   uses: appleboy/ssh-action@v1.0.3
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USERNAME }}
+    #     key: ${{ secrets.EC2_SSH_KEY }}
 
-        script: |
-            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 528043283929.dkr.ecr.ap-south-1.amazonaws.com
-            docker pull 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
+    #     script: |
+    #         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 528043283929.dkr.ecr.ap-south-1.amazonaws.com
+    #         docker pull 528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
             
-            docker stop churn-app || true
-            docker rm churn-app || true
+    #         docker stop churn-app || true
+    #         docker rm churn-app || true
 
-            docker run -d -p 80:8000 \
-            --restart unless-stopped \
-            -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
-            --name churn-app \
-            528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
+    #         docker run -d -p 80:8000 \
+    #         --restart unless-stopped \
+    #         -e DAGSHUB_PAT=${{ secrets.DAGSHUB_PAT }} \
+    #         --name churn-app \
+    #         528043283929.dkr.ecr.ap-south-1.amazonaws.com/churn-application-image:v2
 
-            docker logs churn-app --tail 50
+    #         docker logs churn-app --tail 50
